@@ -2,7 +2,7 @@
 {
     using (StreamReader reader = new("Inputs/Day2.txt"))
     {
-        int TotalArea = 0;
+        int totalLength = 0;
 
         while (reader.Peek() >= 0) {
             string line = reader.ReadLine();
@@ -12,14 +12,13 @@
             int y = dimensions[1];
             int z = dimensions[2];
 
-            int boxSurfaceArea = 2*x*y + 2*x*z + 2*y*z;
-            // Since the length of the sides is in ascending order, the first 2 positions form the smallest side
-            int smallestSideArea = x * y;
+            int smallestPerimeter = 2*x + 2*y;
+            int bowLength = x*y*z;
 
-            TotalArea += boxSurfaceArea + smallestSideArea;
+            totalLength += smallestPerimeter + bowLength;
         }
 
-        Console.WriteLine($"Total area: {TotalArea}");
+        Console.WriteLine($"Total length: {totalLength}");
     }
 }
 catch (Exception e)
