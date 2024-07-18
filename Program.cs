@@ -1,24 +1,35 @@
 ﻿try
 {
-    using (StreamReader reader = new("Inputs/Day2.txt"))
+    using (StreamReader reader = new("Inputs/Day3.txt"))
     {
-        int totalLength = 0;
+        string moves = reader.ReadToEnd();
 
-        while (reader.Peek() >= 0) {
-            string line = reader.ReadLine();
-            int[] dimensions = line.Split("x").Select(x => int.Parse(x)).Order().ToArray();
-            
-            int x = dimensions[0];
-            int y = dimensions[1];
-            int z = dimensions[2];
+        (int x, int y) position = (0, 0);
+        HashSet<(int, int)> visitedPositions = [(0, 0)];
 
-            int smallestPerimeter = 2*x + 2*y;
-            int bowLength = x*y*z;
+        foreach (var move in moves)
+        {
+            if (move == '^')
+            {
+                position.y += 1;
+            }
+            else if (move == 'v')
+            {
+                position.y -= 1;
+            }
+            else if (move == '>')
+            {
+                position.x += 1;
+            }
+            else
+            {
+                position.x -= 1;
+            }
 
-            totalLength += smallestPerimeter + bowLength;
+            visitedPositions.Add(position);
         }
 
-        Console.WriteLine($"Total length: {totalLength}");
+        Console.WriteLine($"Visited houses: {visitedPositions.Count}");
     }
 }
 catch (Exception e)
