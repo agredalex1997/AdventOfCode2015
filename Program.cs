@@ -1,45 +1,28 @@
-﻿namespace AdventOfCode
+﻿using System.Security.Cryptography;
+using System.Text;
+
+namespace AdventOfCode
 {
-    class Position
-    {
-        public Position(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-
-        internal int X { get; set; }
-        internal int Y { get; set; }
-
-        public (int, int) ToTuple() {
-            return (X, Y);
-        }
-    }
-
     internal class Program
     {
         private static void Main(string[] args)
         {
             try
             {
-                using (StreamReader reader = new("Inputs/Day3.txt"))
-                {
-                    string moves = reader.ReadToEnd();
+                string secretKey = "yzbqklnj";
+                string leadingToLookFor = "00000";
 
-                    var santaPosition = new Position(0, 0);
-                    var roboSantaPosition = new Position(0, 0);
-                    HashSet<(int, int)> visitedPositions = [(0, 0)];
+                int i = 1;
 
-                    for (int i = 0; i < moves.Length; i++)
-                    {
-                        char move = moves[i];
-                        var positionToUpdate = i % 2 == 0 ? santaPosition : roboSantaPosition;
-
-                        UpdatePosition(positionToUpdate, move);
-                        visitedPositions.Add(positionToUpdate.ToTuple());
+                while(true) {
+                    string hash = GetMD5Hash($"{secretKey}{i}");
+                    
+                    if (hash.StartsWith(leadingToLookFor)) {
+                        Console.WriteLine($"Number = {i}, MD5 hash = {hash}");
+                        break;
+                    } else {
+                        i += 1;
                     }
-
-                    Console.WriteLine($"Visited houses = {visitedPositions.Count}");
                 }
             }
             catch (Exception e)
@@ -48,23 +31,17 @@
             }
         }
 
-        private static void UpdatePosition(Position positionToUpdate, char move)
+        private static string GetMD5Hash(string source)
         {
-            switch (move)
+            byte[] data= MD5.HashData(Encoding.UTF8.GetBytes(source));
+            var hash = new StringBuilder();
+
+            foreach (var item in data)
             {
-                case '^':
-                    positionToUpdate.Y += 1;
-                    break;
-                case 'v':
-                    positionToUpdate.Y -= 1;
-                    break;
-                case '>':
-                    positionToUpdate.X += 1;
-                    break;
-                case '<':
-                    positionToUpdate.X -= 1;
-                    break;
+                hash.Append(item.ToString("x2"));
             }
+
+            return hash.ToString();
         }
     }
 }
