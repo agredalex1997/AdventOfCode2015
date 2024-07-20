@@ -10,7 +10,7 @@ namespace AdventOfCode
             try
             {
                 string secretKey = "yzbqklnj";
-                string leadingToLookFor = "00000";
+                string leadingToLookFor = "000000";
 
                 int i = 1;
 
