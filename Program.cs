@@ -1,4 +1,5 @@
 ﻿using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace AdventOfCode
@@ -9,20 +10,20 @@ namespace AdventOfCode
         {
             try
             {
-                string secretKey = "yzbqklnj";
-                string leadingToLookFor = "000000";
+                int niceStrings = 0;
 
-                int i = 1;
+                using (StreamReader reader = new("Inputs/Day5.txt"))
+                {
+                    while (reader.Peek() >= 0)
+                    {
+                        string? str = reader.ReadLine();
 
-                while(true) {
-                    string hash = GetMD5Hash($"{secretKey}{i}");
-                    
-                    if (hash.StartsWith(leadingToLookFor)) {
-                        Console.WriteLine($"Number = {i}, MD5 hash = {hash}");
-                        break;
-                    } else {
-                        i += 1;
+                        if (str != null && IsNice(str)) {
+                            niceStrings += 1;
+                        }
                     }
+
+                    Console.WriteLine($"Nice strings: {niceStrings}");
                 }
             }
             catch (Exception e)
@@ -31,17 +32,70 @@ namespace AdventOfCode
             }
         }
 
-        private static string GetMD5Hash(string source)
+        private static bool IsNice(string str)
         {
-            byte[] data= MD5.HashData(Encoding.UTF8.GetBytes(source));
-            var hash = new StringBuilder();
-
-            foreach (var item in data)
+            if (CountVowels(str) < 3)
             {
-                hash.Append(item.ToString("x2"));
+                return false;
             }
 
-            return hash.ToString();
+            if (!DoesHaveLetterTwiceInRow(str))
+            {
+                return false;
+            }
+
+            if (DoesHaveForbiddenString(str, ["ab", "cd", "pq", "xy"]))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool DoesHaveForbiddenString(string str, List<string> forbidden)
+        {
+            foreach (string forbiddenStr in forbidden)
+            {
+                if (str.Contains(forbiddenStr))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool DoesHaveLetterTwiceInRow(string str)
+        {
+            char prevChar = ' ';
+
+            foreach (char character in str)
+            {
+                if (character == prevChar)
+                {
+                    return true;
+                }
+
+                prevChar = character;
+            }
+
+            return false;
+        }
+
+        private static int CountVowels(string str)
+        {
+            List<char> vowels = ['a', 'e', 'i', 'o', 'u'];
+            int vowelsCount = 0;
+
+            foreach (char character in str)
+            {
+                if (vowels.Contains(character))
+                {
+                    vowelsCount += 1;
+                }
+            }
+
+            return vowelsCount;
         }
     }
 }
