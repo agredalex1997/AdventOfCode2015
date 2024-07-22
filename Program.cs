@@ -1,8 +1,4 @@
-﻿using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-
-namespace AdventOfCode
+﻿namespace AdventOfCode
 {
     internal class Program
     {
@@ -18,7 +14,8 @@ namespace AdventOfCode
                     {
                         string? str = reader.ReadLine();
 
-                        if (str != null && IsNice(str)) {
+                        if (str != null && IsNice(str))
+                        {
                             niceStrings += 1;
                         }
                     }
@@ -34,17 +31,12 @@ namespace AdventOfCode
 
         private static bool IsNice(string str)
         {
-            if (CountVowels(str) < 3)
+            if (!DoesContainTwoLettersTwiceWithoutOverlapping(str))
             {
                 return false;
             }
 
-            if (!DoesHaveLetterTwiceInRow(str))
-            {
-                return false;
-            }
-
-            if (DoesHaveForbiddenString(str, ["ab", "cd", "pq", "xy"]))
+            if (!DoesContainLetterThatRepeatsWithOneLetterBetween(str))
             {
                 return false;
             }
@@ -52,11 +44,13 @@ namespace AdventOfCode
             return true;
         }
 
-        private static bool DoesHaveForbiddenString(string str, List<string> forbidden)
+        private static bool DoesContainTwoLettersTwiceWithoutOverlapping(string str)
         {
-            foreach (string forbiddenStr in forbidden)
+            for (int i = 0; i <= str.Length - 4; i++)
             {
-                if (str.Contains(forbiddenStr))
+                string currentPair = str.Substring(i, 2);
+
+                if (str.Substring(i + 2).Contains(currentPair))
                 {
                     return true;
                 }
@@ -65,37 +59,17 @@ namespace AdventOfCode
             return false;
         }
 
-        private static bool DoesHaveLetterTwiceInRow(string str)
+        private static bool DoesContainLetterThatRepeatsWithOneLetterBetween(string str)
         {
-            char prevChar = ' ';
-
-            foreach (char character in str)
+            for (int i = 0; i <= str.Length - 3; i++)
             {
-                if (character == prevChar)
+                if (str[i] == str[i + 2])
                 {
                     return true;
                 }
-
-                prevChar = character;
             }
 
             return false;
-        }
-
-        private static int CountVowels(string str)
-        {
-            List<char> vowels = ['a', 'e', 'i', 'o', 'u'];
-            int vowelsCount = 0;
-
-            foreach (char character in str)
-            {
-                if (vowels.Contains(character))
-                {
-                    vowelsCount += 1;
-                }
-            }
-
-            return vowelsCount;
         }
     }
 }
