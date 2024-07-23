@@ -6,21 +6,59 @@
         {
             try
             {
-                int niceStrings = 0;
+                List<List<bool>> grid = new();
 
-                using (StreamReader reader = new("Inputs/Day5.txt"))
+                for (int i = 0; i < 1000; i++)
+                {
+                    grid.Add(Enumerable.Repeat(false, 1000).ToList());
+                }
+
+                using (StreamReader reader = new("Inputs/Day6.txt"))
                 {
                     while (reader.Peek() >= 0)
                     {
-                        string? str = reader.ReadLine();
+                        string? line = reader.ReadLine();
+                        string[] words = line.Split(' ');
 
-                        if (str != null && IsNice(str))
+                        string command = "";
+
+                        if (words.Length == 5)
                         {
-                            niceStrings += 1;
+                            command = $"{words[0]} {words[1]}"; // "turn on", "turn of"
+                        }
+                        else if (words.Length == 4)
+                        {
+                            command = words[0]; // "toggle"
+                        }
+
+                        (int ulx, int uly) = ParseCorner(words[^3]);
+                        (int lrx, int lry) = ParseCorner(words[^1]);
+
+                        for (int row = uly; row <= lry; row++)
+                        {
+                            for (int cell = ulx; cell <= lrx; cell++)
+                            {
+                                switch (command)
+                                {
+                                    case "turn on":
+                                        grid[row][cell] = true;
+                                        break;
+                                    case "turn off":
+                                        grid[row][cell] = false;
+                                        break;
+                                    case "toggle":
+                                        grid[row][cell] = !grid[row][cell];
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
                         }
                     }
 
-                    Console.WriteLine($"Nice strings: {niceStrings}");
+                    int litLights = grid.Sum(row => row.Count(light => light == true));
+
+                    Console.WriteLine($"Lit lights = {litLights}");
                 }
             }
             catch (Exception e)
@@ -29,47 +67,11 @@
             }
         }
 
-        private static bool IsNice(string str)
+        private static (int, int) ParseCorner(string corner)
         {
-            if (!DoesContainTwoLettersTwiceWithoutOverlapping(str))
-            {
-                return false;
-            }
+            string[] coords = corner.Split(',');
 
-            if (!DoesContainLetterThatRepeatsWithOneLetterBetween(str))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private static bool DoesContainTwoLettersTwiceWithoutOverlapping(string str)
-        {
-            for (int i = 0; i <= str.Length - 4; i++)
-            {
-                string currentPair = str.Substring(i, 2);
-
-                if (str.Substring(i + 2).Contains(currentPair))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool DoesContainLetterThatRepeatsWithOneLetterBetween(string str)
-        {
-            for (int i = 0; i <= str.Length - 3; i++)
-            {
-                if (str[i] == str[i + 2])
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return (int.Parse(coords[0]), int.Parse(coords[1]));
         }
     }
 }
