@@ -6,11 +6,11 @@
         {
             try
             {
-                List<List<bool>> grid = new();
+                List<List<int>> grid = new();
 
                 for (int i = 0; i < 1000; i++)
                 {
-                    grid.Add(Enumerable.Repeat(false, 1000).ToList());
+                    grid.Add(Enumerable.Repeat(0, 1000).ToList());
                 }
 
                 using (StreamReader reader = new("Inputs/Day6.txt"))
@@ -41,13 +41,15 @@
                                 switch (command)
                                 {
                                     case "turn on":
-                                        grid[row][cell] = true;
+                                        grid[row][cell] += 1;
                                         break;
                                     case "turn off":
-                                        grid[row][cell] = false;
+                                        if (grid[row][cell] != 0) {
+                                            grid[row][cell] -= 1;
+                                        }
                                         break;
                                     case "toggle":
-                                        grid[row][cell] = !grid[row][cell];
+                                        grid[row][cell] += 2;
                                         break;
                                     default:
                                         break;
@@ -56,9 +58,9 @@
                         }
                     }
 
-                    int litLights = grid.Sum(row => row.Count(light => light == true));
+                    int litLights = grid.Sum(row => row.Sum());
 
-                    Console.WriteLine($"Lit lights = {litLights}");
+                    Console.WriteLine($"Total brightness = {litLights}");
                 }
             }
             catch (Exception e)
